@@ -1,0 +1,5 @@
+ofxArtool5
+ofxIpVideoGrabber
+ofxNetwork
+ofxOpenCv
+ofxXmlSettings
