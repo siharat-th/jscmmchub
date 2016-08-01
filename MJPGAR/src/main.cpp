@@ -7,7 +7,7 @@ int main( ){
 //	ofSetupOpenGL( 640, 480,OF_WINDOW);
     
 //    // QVGA
-    ofSetupOpenGL( 320, 240,OF_WINDOW);
+    ofSetupOpenGL( 640, 480,OF_WINDOW);
 
 	// this kicks off the running of my app
 	// can be OF_WINDOW or OF_FULLSCREEN

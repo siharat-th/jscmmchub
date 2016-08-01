@@ -4,6 +4,6 @@ mjpegStreamURL = http://192.168.1.139:8080/?action=stream
 
 // Drone IP Address & port for communicate via UDP Socket.
 //
-udpHost = 192.168.1.101
+udpHost = 192.168.1.139
 udpPort = 33333
 

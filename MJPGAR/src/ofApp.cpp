@@ -5,7 +5,7 @@ const float speed = 2.0f;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    ofSetLogLevel(OF_LOG_VERBOSE);
+//    ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetFrameRate(60);
     
     
@@ -55,8 +55,8 @@ void ofApp::setup(){
     udpConnection.Connect(udpHost.c_str(), udpPort);
     udpConnection.SetNonBlocking(true);
     
-    float cameraWidth = 320;//grabber->getWidth();
-    float cameraHeight = 240;//grabber->getHeight();
+    float cameraWidth = 640;//grabber->getWidth();
+    float cameraHeight = 480;//grabber->getHeight();
     artk.setup(ofVec2f(cameraWidth, cameraHeight), ofVec2f(ofGetWidth(), ofGetHeight()));
 }
 
@@ -86,14 +86,14 @@ void ofApp::update(){
         ofVec3f pos(mat[12], mat[13], mat[14]);
         ofVec3f dir(mat[8], mat[9], mat[10]);
         
-        ofMatrix4x4 mLookat = ofMatrix4x4::newLookAtMatrix(drone.getPosition(), pos, ofVec3f(0, 1, 0));
+        ofMatrix4x4 mLookat = ofMatrix4x4::newLookAtMatrix(ofVec3f(0,0,0), pos, ofVec3f(0, 1, 0));
         ofQuaternion qLookat;
         qLookat.set(mLookat);
         
         ofVec3f euler = qLookat.getEuler();
-        float yaw = euler.x;
-        float pitch = euler.y;
-        float roll = euler.z;
+        int yaw = -euler.y;
+        int pitch = euler.x;
+        int roll = euler.z;
         
         ofQuaternion qNow = drone.getOrientationQuat();
         ofQuaternion qLerp;
@@ -110,10 +110,31 @@ void ofApp::update(){
             ofVec3f lerpPosition = curPosition.interpolate(nextPosition, 0.6);
             drone.setPosition(lerpPosition);
         }
+        
+        char buf[128];
+        memset(buf, '\0', 128);
+        //        sprintf(buf,
+        //                "target_position=%.0f,%.0f,%.0f target_direction=%.3f,%.3f,%.3f euler=%d,%d,%d,",
+        //                trans.x, trans.y, trans.z,
+        //                dir.x, dir.y, dir.z,
+        //                yaw, pitch, roll);
+        dir=dir*1000.0f;
+        sprintf(buf,
+                "aa %.0f %.0f %.0f %.0f %.0f %.0f ",
+                pos.x, pos.y, pos.z,
+                dir.x, dir.y, dir.z
+                );
+        
+        string message(buf);
+        cout << message << endl;
+        udpConnection.Send(message.c_str(), message.length());
     }
     else
     {
 //        ofLogVerbose("artk not found");
+        string msg = "NULL";
+        cout << "Marker not found." << endl;
+        udpConnection.Send(msg.c_str(), msg.length());
     }
 }
 
@@ -158,8 +179,8 @@ void ofApp::draw(){
         ofQuaternion qLookat;
         qLookat.set(mLookat);
         ofVec3f euler = qLookat.getEuler();
-        int yaw   = euler.x;
-        int pitch = euler.y;
+        int yaw   = euler.y;
+        int pitch = euler.x;
         int roll  = euler.z;
         
 //        stringstream ss;
@@ -169,21 +190,28 @@ void ofApp::draw(){
 //        string message = ss.str();
 //        udpConnection.Send(message.c_str(), message.length());
         
-        char buf[128];
-        memset(buf, '\0', 128);
-        sprintf(buf,
-                "target_position=%.0f,%.0f,%.0f target_direction=%.3f,%.3f,%.3f euler=%d,%d,%d,",
-                trans.x, trans.y, trans.z,
-                dir.x, dir.y, dir.z,
-                yaw, pitch, roll);
-        
-        string message(buf);
-        udpConnection.Send(message.c_str(), message.length());
+//        char buf[128];
+//        memset(buf, '\0', 128);
+////        sprintf(buf,
+////                "target_position=%.0f,%.0f,%.0f target_direction=%.3f,%.3f,%.3f euler=%d,%d,%d,",
+////                trans.x, trans.y, trans.z,
+////                dir.x, dir.y, dir.z,
+////                yaw, pitch, roll);
+//        sprintf(buf,
+//                "%.0f %.0f %.0f %.1f %.1f %.1f %d %d %d ",
+//                trans.x, trans.y, trans.z,
+//                dir.x, dir.y, dir.z,
+//                yaw, pitch, roll);
+//        
+//        string message(buf);
+//        cout << message << endl;
+//        udpConnection.Send(message.c_str(), message.length());
     }
     else
     {
-        string msg = "NULL";
-        udpConnection.Send(msg.c_str(), msg.length());
+//        string msg = "NULL";
+//        cout << "Marker not found." << endl;
+//        udpConnection.Send(msg.c_str(), msg.length());
     }
     
     // postion from matrix
@@ -193,21 +221,21 @@ void ofApp::draw(){
     ofVec3f dir(mat[8], mat[9], mat[10]);
     artk.getARProjectionMatrix(proj);
     
-    ofPushView();
-    {
-        glMatrixMode(GL_PROJECTION);
-#ifdef ARDOUBLE_IS_FLOAT
-        glLoadMatrixf(proj);
-#else
-        glLoadMatrixd(proj);
-#endif
-        glMatrixMode(GL_MODELVIEW);
-        
-        glLoadIdentity();
-        
-        drone.draw();
-    }
-    ofPopView();
+//    ofPushView();
+//    {
+//        glMatrixMode(GL_PROJECTION);
+//#ifdef ARDOUBLE_IS_FLOAT
+//        glLoadMatrixf(proj);
+//#else
+//        glLoadMatrixd(proj);
+//#endif
+//        glMatrixMode(GL_MODELVIEW);
+//        
+//        glLoadIdentity();
+//        
+//        drone.draw();
+//    }
+//    ofPopView();
     
     
     artk.drawDebug();
