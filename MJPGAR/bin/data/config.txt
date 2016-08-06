@@ -1,6 +1,6 @@
 // Linkit MJPEG Stream URL (include port & parameter)
 //
-mjpegStreamURL = http://192.168.1.139:8080/?action=stream
+mjpegStreamURL = http://192.168.1.19:8000/?action=stream
 
 // Drone IP Address & port for communicate via UDP Socket.
 //
